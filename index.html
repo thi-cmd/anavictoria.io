@@ -80,11 +80,10 @@
       line-height: 1.6;
     }
 
-    /* Container grande o suficiente para o botão Não se mover sem sair */
-    .buttons-area {
-      position: relative;
-      width: 100%;
-      height: 160px;
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
     }
 
     .btn {
@@ -95,7 +94,6 @@
       font-family: 'Inter', sans-serif;
       font-weight: 500;
       cursor: pointer;
-      position: absolute;
     }
 
     .btn-yes {
@@ -112,25 +110,56 @@
       background: rgba(255,255,255,0.08);
       color: #d4aab8;
       border: 1px solid rgba(255,150,170,0.3);
-      transition: left 0.15s ease, top 0.15s ease;
     }
 
     .btn-no:hover {
       background: rgba(255,255,255,0.12);
     }
 
-    .success-msg {
-      display: none;
+    .btn-retry {
+      background: rgba(255,255,255,0.08);
+      color: #d4aab8;
+      border: 1px solid rgba(255,150,170,0.3);
+      margin-top: 1.5rem;
     }
 
-    .success-msg .big-heart {
+    .btn-retry:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* Telas */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Tela de erro */
+    .error-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 1.25rem;
+    }
+
+    .error-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: #f9c6d0;
+      margin-bottom: 0.75rem;
+    }
+
+    .error-sub {
+      font-size: 1rem;
+      color: #c4909f;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Tela de sucesso */
+    .success-emoji {
       font-size: 4rem;
       display: block;
       margin-bottom: 1rem;
       animation: pulse 1.5s ease-in-out infinite;
     }
 
-    .success-msg p {
+    .success-msg {
       font-family: 'Playfair Display', serif;
       font-size: 1.5rem;
       color: #f9c6d0;
@@ -142,74 +171,52 @@
 
   <div class="hearts-bg" id="heartsBg"></div>
 
-  <div class="card" id="mainCard">
-    <span class="emoji-top">💕</span>
-    <h1>Feliz dia dos namoradooosss,<br>minha ex namoradaaa</h1>
+  <div class="card">
 
-    <p class="question">Você ainda vai namorar comigo e a gente vai casar?</p>
-
-    <div class="buttons-area" id="buttonsArea">
-      <button class="btn btn-yes" id="btnYes" onclick="handleYes()">Siimm</button>
-      <button class="btn btn-no"  id="btnNo"  onclick="handleNo()">Não😡</button>
+    <!-- Tela principal -->
+    <div class="screen active" id="screenMain">
+      <span class="emoji-top">💕</span>
+      <h1>Feliz dia dos namoradoosss,<br>minha ex namoradaaa</h1>
+      <p class="question">Você ainda vai namorar comigo e a gente vai casar?</p>
+      <div class="buttons">
+        <button class="btn btn-yes" onclick="handleYes()">Siiimm</button>
+        <button class="btn btn-no"  onclick="showError()">Não, seu feioso😡</button>
+      </div>
     </div>
 
-    <div class="success-msg" id="successMsg">
-      <span class="big-heart">❤️</span>
-      <p>Eu sabia que você ainda me amava, gatinha, eu sei que sou incrível ❤️, eu também te amo</p>
+    <!-- Tela de erro -->
+    <div class="screen" id="screenError">
+      <span class="error-emoji">🚫</span>
+      <p class="error-title">Erro 404</p>
+      <p class="error-sub">Essa opção não está disponível. Por favor, tente novamente</p>
+      <button class="btn btn-retry" onclick="goBack()">Tentar novamente</button>
     </div>
+
+    <!-- Tela de sucesso -->
+    <div class="screen" id="screenSuccess">
+      <span class="success-emoji">❤️</span>
+      <p class="success-msg">Eu sabia que você ainda me amava, gatinhaaa, eu sei que sou incrível ❤️, eu também te amo muuiitoo</p>
+    </div>
+
   </div>
 
   <script>
-    const area   = document.getElementById('buttonsArea');
-    const btnYes = document.getElementById('btnYes');
-    const btnNo  = document.getElementById('btnNo');
-
-    function positionButtons() {
-      const aw = area.offsetWidth;
-      const ah = area.offsetHeight;
-      const yw = btnYes.offsetWidth;
-      const yh = btnYes.offsetHeight;
-      const nw = btnNo.offsetWidth;
-
-      const centerY = (ah - yh) / 2;
-      const totalW  = yw + 16 + nw;
-      const startX  = (aw - totalW) / 2;
-
-      btnYes.style.left = startX + 'px';
-      btnYes.style.top  = centerY + 'px';
-      btnNo.style.left  = (startX + yw + 16) + 'px';
-      btnNo.style.top   = centerY + 'px';
-    }
-
-    function handleNo() {
-      const aw = area.offsetWidth;
-      const ah = area.offsetHeight;
-      const nw = btnNo.offsetWidth;
-      const nh = btnNo.offsetHeight;
-
-      const curLeft = parseInt(btnNo.style.left) || 0;
-      const curTop  = parseInt(btnNo.style.top)  || 0;
-
-      // Move entre 80 e 160px em direção aleatória, mas fica dentro da área
-      const angle = Math.random() * 2 * Math.PI;
-      const dist  = 80 + Math.random() * 80;
-      let newLeft = curLeft + Math.cos(angle) * dist;
-      let newTop  = curTop  + Math.sin(angle) * dist;
-
-      newLeft = Math.max(0, Math.min(aw - nw, newLeft));
-      newTop  = Math.max(0, Math.min(ah - nh, newTop));
-
-      btnNo.style.left = newLeft + 'px';
-      btnNo.style.top  = newTop  + 'px';
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
     }
 
     function handleYes() {
-      document.querySelector('h1').style.display = 'none';
-      document.querySelector('.emoji-top').style.display = 'none';
-      document.querySelector('.question').style.display = 'none';
-      document.getElementById('buttonsArea').style.display = 'none';
-      document.getElementById('successMsg').style.display = 'block';
+      showScreen('screenSuccess');
       launchHearts();
+    }
+
+    function showError() {
+      showScreen('screenError');
+    }
+
+    function goBack() {
+      showScreen('screenMain');
     }
 
     function createHearts() {
@@ -243,8 +250,6 @@
     }
 
     createHearts();
-    window.addEventListener('load', positionButtons);
-    window.addEventListener('resize', positionButtons);
   </script>
 </body>
 </html>
